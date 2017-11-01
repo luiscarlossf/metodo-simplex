@@ -1,2 +1,3 @@
-# metodo-simplex
-Implementation of Simplex Method
+# Método Simplex
+
+Implementação do Método Simplex.
