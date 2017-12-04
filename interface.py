@@ -45,6 +45,9 @@ class Application:
         self.variavelObjetivaConteiner = Frame(master)
         self.variavelObjetivaConteiner["padx"] = 20
         self.variavelObjetivaConteiner.pack()
+        self.tipo = IntVar()
+        Radiobutton(self.variavelObjetivaConteiner, text="MIN", padx=20, variable=self.tipo, value=1).pack(anchor=W, side=LEFT)
+        Radiobutton(self.variavelObjetivaConteiner, text="MAX", padx=20, variable=self.tipo, value=2).pack(anchor=W, side=LEFT)
         # Entrada de dados: variavel da função objetivo
         self.variavelObjetiva = Entry(self.variavelObjetivaConteiner)
         self.variavelObjetiva["width"] = 5
@@ -142,6 +145,7 @@ class Application:
         self.t.pack(side=LEFT, fill=Y)
         self.show.config(command=self.t.yview)
         self.t.config(yscrollcommand=self.show.set)
+
 
         # Botão: show
 
