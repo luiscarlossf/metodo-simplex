@@ -133,22 +133,43 @@ class Application:
         self.add["padx"] = 20
         self.add.pack(side=RIGHT)
 
+        self.showConteiner = Frame(master)
+        self.showConteiner["padx"] = 40
+        self.showConteiner.pack()
+        self.show = Scrollbar(self.showConteiner)
+        self.t = Text(self.showConteiner,height=10, width=200)
+        self.show.pack(side=RIGHT, fill=Y)
+        self.t.pack(side=LEFT, fill=Y)
+        self.show.config(command=self.t.yview)
+        self.t.config(yscrollcommand=self.show.set)
+
+        # Botão: show
+
     def solucao_simplex(self):
         s= Simplex()
         self.restrincaoL.append(self.aux2)
         s.forma_padrao(self.funcaoObjetiva,self.restrincaoL)
+        quote = ""
         print("Solução Básica Inicial")
         print(s.solve)
+        quote+="Solução Básica Inicial:"+"\n"+str(s.solve)+"\n"
         while not (s.is_otima()):
             variavelEntra = s.quem_entra()
             print("Variável que entra")
             print(variavelEntra)
+            quote += "Variável que entra:" + "\n"+str(variavelEntra)+"\n"
             variavelSai = s.quem_sai(variavelEntra)
             print("Variável que sai")
             print(variavelSai)
+            quote += "Variável que sai:" +"\n"+ str(variavelSai) + "\n"
             s.new_solution(sai=variavelSai, entra=variavelEntra)
             print("Novo Tableau")
+            quote += "Novo Tableau:"+"\n"
+            for i in s.tableau:
+                quote += str(i)+"\n"
             print(s.tableau)
+        self.t.insert(END, quote)
+
 
     def resetar(self):
         self.textFO = "Função Objetivo"
