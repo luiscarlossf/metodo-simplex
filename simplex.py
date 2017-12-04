@@ -1,6 +1,6 @@
 #File name: simplex.py
 #Author: Luis Carlos <luiscarlos.sf@outlook.com>
- #import numpy as np
+
 import sys
 """
     O método Simplex compreende os seguintes passos:
@@ -23,6 +23,9 @@ class Simplex():
         self.solve = list()
 
     """
+        A função forma_padrao inicializa o self.tableau com a PPL, passada 
+        por parâmetro, na forma padrão.  
+        Formato dos parâmetros:
         funcao_objetivo : [x1, x2, x3, ...]
         restricoes : [["<= ou >= ou = ",x1, x2, x3, ..., b1],["<= ou >= ou = ", x1, x2, x3, ..., b2], ..., [0, ">=", ">=",">=", ...]]
     """
@@ -71,6 +74,13 @@ class Simplex():
         self.quantRest = len(restricoes) - 1
         self.tableau_inicial(funcao_objetivo, restricoes)
 
+    """
+        Transfere os valores das duas matrizes passadas por parâmetro em self.tableau
+        Formato dos parâmetros:
+        funcao_objetivo : [x1, x2, x3, ...]
+        restricoes : [["<= ou >= ou = ",x1, x2, x3, ..., b1],["<= ou >= ou = ", x1, x2, x3, ..., b2], ..., [0, ">=", ">=",">=", ...]]
+        
+    """
     def tableau_inicial(self, funcao_objetivo, restricoes):
 
         for i in range(self.quantRest):
@@ -79,19 +89,18 @@ class Simplex():
         aux = len(self.tableau)-1
         for i in range( len(funcao_objetivo), len(self.tableau[0])):
             self.tableau[aux].append(0)
-
-    def solution(self):
-
-        for i in range(self.quantRest):
-            if self.tableau[self.quantRest][i] == 0:
-                self.solve[i]=0
-        return self.solve
-
+    """
+         Determina a variável que sai na base
+         Retorna o índice da coluna da varíavel no Tableau
+    """
     def quem_entra(self):
         variavelEntra = min(self.tableau[self.quantRest])
-        print(self.tableau[self.quantRest].index(variavelEntra))
         return self.tableau[self.quantRest].index(variavelEntra)
 
+        """
+            Determina a variável que sai na base
+            Retorna o índice da linha da varivável no Tableau
+        """
     def quem_sai(self, variavel_entra):
         razao=list()
         for i in range(self.quantRest):
@@ -103,64 +112,41 @@ class Simplex():
                     razao.append(sys.maxsize)
             else:
                 razao.append(sys.maxsize)
-        print(razao)
         return razao.index(min(razao))
-    def is_otima(self):
 
+    """
+        Verifica se a Solução atual é ótima
+        Retorna True se sim, caso contrário False
+    """
+    def is_otima(self):
         for custo in self.tableau[self.quantRest]:
-            if custo< 0:
+            if custo < 0:
                 return False
         return True
 
+    """
+        Determina a nova solução
+    """
     def new_solution(self, sai, entra):
+
+        #Deixando igual a 1 na coluna
+        lista = list()
+        aux1 = self.tableau[sai][entra]
         for i in range(self.quantVar):
-                self.tableau[sai][i] = self.tableau[sai][i]/self.tableau[sai][entra]
+            self.tableau[sai][i] = self.tableau[sai][i]/aux1
+            lista.append(self.tableau[sai][i])
+
+        #Zerando a coluna
+        aux= dict()
+        for i in range(self.quantRest+1):
+            if i != sai:
+                    aux[i]=(-1)*(self.tableau[i][entra]/self.tableau[sai][entra])
 
         for i in range(self.quantRest+1):
             for j in range(self.quantVar):
-                self.tableau[i][j] = self.tableau[i][j]
+                if i != sai:
+                    self.tableau[i][j] = aux[i] * lista[j] + self.tableau[i][j]
+        self.solve
 
-
-
-
-if __name__=="__main__":
-
-    funcao_objetivo = [-2,-1,1]
-    restricoes = [["<=",1,1,2,6], ["<=",1,4,-1, 4], [0, ">=", ">=", ">="]]
-
-    t = Simplex()
-    t.forma_padrao(funcao_objetivo, restricoes)
-    print("Tableu Inicial")
-    print(t.tableau)
-
-    print("Solução Inicial")
-    print(t.solve)
-
-    print("Z")
-    print(t.tableau[t.quantRest][t.quantVar-1])
-
-    print("Entra")
-    entra = t.quem_entra()
-    print("Sai")
-    print(t.quem_sai(entra))
-    #Exibindo o PPL na forma padrão
-    funcao= "MIN Z = "
-    for i in range(len(funcao_objetivo)):
-        if i+1 == len(funcao_objetivo):
-            funcao += str(funcao_objetivo[i]) + 'X' + str(i + 1)
-        else:
-            funcao += str(funcao_objetivo[i])+'X'+ str(i+1)+" + "
-    print(funcao)
-    print("Restrições: ")
-    for i in range(len(restricoes)-1):
-        string = ""
-        for j in range(1,len(restricoes[i])):
-                if j + 1 == len(restricoes[i]):
-                    string += str(restricoes[i][j])
-                elif j + 2 == len(restricoes[i]):
-                    string += str(restricoes[i][j]) + 'X' + str(j)+ " ="
-                else:
-                    string += str(restricoes[i][j])+'X'+ str(j)+ "  +"
-        print(string)
 
 
